@@ -5,7 +5,7 @@
       <el-form
         :model="userForm"
         :rules="rules"
-        ref="ruleForm"
+        ref="loginForm"
         class="demo-ruleForm"
       >
         <el-form-item prop="username">
@@ -15,13 +15,14 @@
           <el-input v-model="userForm.password" placeholder="请输入密码" prefix-icon="myicon myicon-key"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="login-btn">登录</el-button>
+          <el-button type="primary" class="login-btn" @click="login">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 <script>
+import { login } from '@/api/login_index.js'
 export default {
   data () {
     return {
@@ -33,8 +34,33 @@ export default {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
       }
+    }
+  },
+  methods: {
+    login () {
+      // 先进行二次判断
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          login(this.userForm)
+            .then((res) => {
+              if (res.data.meta.status === 200) {
+                this.$message.success(res.data.meta.msg)
+                // 跳转到首页
+              } else {
+                this.$message.error(res.data.meta.msg)
+              }
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        } else {
+          this.$message.warning('请输入所有必填数据')
+        }
+      })
     }
   }
 }
