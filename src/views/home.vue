@@ -2,7 +2,7 @@
   <div class="home">
     <el-container>
       <el-aside width="200px">
-        <img src="../assets/logo.png" alt="" class="logo">
+        <a href="javascript" class="logo"></a>
         <!-- 左侧菜单项 -->
         <el-menu
           default-active="2"
@@ -18,7 +18,7 @@
               <i class="el-icon-location"></i>
               <span>用户管理</span>
             </template>
-            <el-menu-item index="1-1">
+            <el-menu-item index="/home/user">
               <i class="el-icon-menu"></i>
               <span slot="title">用户列表</span>
             </el-menu-item>
@@ -79,6 +79,7 @@ export default {
     background-color: #545c64;
   }
   .logo {
+    display: block;
     height: 60px;
     background: url(../assets/logo.png);
     background-size: cover;
