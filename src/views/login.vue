@@ -51,7 +51,7 @@ export default {
                 this.$message.success(res.data.meta.msg)
                 // 将token存入本地
                 console.log(res)
-                localStorage.setItem('35_token', res.data.datatoken)
+                localStorage.setItem('35_token', res.data.data.token)
                 // 跳转到首页
                 this.$router.push({ name: 'home' })
               } else {
