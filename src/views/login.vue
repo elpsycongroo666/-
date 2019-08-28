@@ -49,7 +49,11 @@ export default {
             .then((res) => {
               if (res.data.meta.status === 200) {
                 this.$message.success(res.data.meta.msg)
+                // 将token存入本地
+                console.log(res)
+                localStorage.setItem('35_token', res.data.datatoken)
                 // 跳转到首页
+                this.$router.push({ name: 'home' })
               } else {
                 this.$message.error(res.data.meta.msg)
               }
@@ -59,6 +63,8 @@ export default {
             })
         } else {
           this.$message.warning('请输入所有必填数据')
+          // 只有return false才能阻止请求
+          return false
         }
       })
     }
