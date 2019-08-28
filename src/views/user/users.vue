@@ -7,8 +7,14 @@
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 搜索输入框 -->
-    <el-input placeholder="请输入内容" class="input-with-select" style="width:350px">
-      <el-button slot="append" icon="el-icon-search"></el-button>
+    <el-input
+      placeholder="请输入内容"
+      v-model="userobj.query"
+      class="input-with-select"
+      style="width:350px"
+      @input.native="init"
+    >
+      <el-button slot="append" icon="el-icon-search" @click="init"></el-button>
     </el-input>
     <!-- 添加用户按钮 -->
     <el-button type="success" plain>添加用户</el-button>
@@ -51,14 +57,20 @@ export default {
     }
   },
   mounted () {
-    getAllUsers(this.userobj)
-      .then((res) => {
-        console.log(res)
-        this.userList = res.data.data.users
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+    //  获取用户列表
+    this.init()
+  },
+  methods: {
+    init () {
+      getAllUsers(this.userobj)
+        .then(res => {
+        //   console.log(res)
+          this.userList = res.data.data.users
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
   }
 }
 </script>
