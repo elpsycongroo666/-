@@ -50,6 +50,27 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
+    <!-- 添加用户对话框 -->
+    <el-dialog title="添加用户" :visible.sync="addDialogFormVisible">
+      <el-form :model="addform" :label-width="'80px'" :rules="rules">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="addform.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="addform.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="addform.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" prop="mobile">
+          <el-input v-model="addform.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -57,6 +78,15 @@ import { getAllUsers } from '@/api/users_index'
 export default {
   data () {
     return {
+      // 添加用户的表单数据
+      addDialogFormVisible: false,
+      addform: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      // 用户总数
       total: 0,
       yes: true,
       userList: [],
@@ -64,6 +94,21 @@ export default {
         query: '',
         pagenum: 1,
         pagesize: 4
+      },
+      // 给添加用户表单添加规则
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ],
+        email: [
+          { pattern: /\w+((-w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+/, message: '请输入正确邮箱格式', trigger: 'blur' }
+        ],
+        mobile: [
+          { pattern: /0?(13|14|15|18)[0-9]{9}/, message: '请输入正确的手机号码', trigger: 'blur' }
+        ]
       }
     }
   },
