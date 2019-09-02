@@ -1,5 +1,5 @@
 <template>
-    <div class="welcomeUse">
+    <div class="welcomeUser">
         欢迎使用后台管理系统
     </div>
 </template>

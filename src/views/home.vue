@@ -2,15 +2,14 @@
   <div class="home">
     <el-container>
       <el-aside width="200px">
-        <a href="javascript" class="logo"></a>
-        <!-- 左侧菜单项 -->
+        <img src="../assets/logo.png" alt="" class="logo">
         <el-menu
           default-active="2"
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
-          :unique-opened ="true"
+          :unique-opened="true"
           :router="true"
         >
           <el-submenu index="1">
@@ -19,8 +18,10 @@
               <span>用户管理</span>
             </template>
             <el-menu-item index="/home/user">
-              <i class="el-icon-menu"></i>
-              <span slot="title">用户列表</span>
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>用户列表</span>
+              </template>
             </el-menu-item>
           </el-submenu>
           <el-submenu index="2">
@@ -29,12 +30,58 @@
               <span>权限管理</span>
             </template>
             <el-menu-item index="2-1">
-              <i class="el-icon-menu"></i>
-              <span slot="title">角色列表</span>
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>角色列表</span>
+              </template>
             </el-menu-item>
             <el-menu-item index="2-2">
-              <i class="el-icon-menu"></i>
-              <span slot="title">权限列表</span>
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>权限列表</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu index="3">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>商品管理</span>
+            </template>
+            <el-menu-item index="3-1">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>商品列表</span>
+              </template>
+            </el-menu-item>
+            <el-menu-item index="3-2">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>权限列表</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu index="4">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>订单管理</span>
+            </template>
+            <el-menu-item index="4-1">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>用户列表</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu index="5">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>数据统计</span>
+            </template>
+            <el-menu-item index="5-1">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>用户列表</span>
+              </template>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -79,7 +126,6 @@ export default {
     background-color: #545c64;
   }
   .logo {
-    display: block;
     height: 60px;
     background: url(../assets/logo.png);
     background-size: cover;
@@ -102,6 +148,9 @@ export default {
   }
   .welcome {
     color: white;
+  }
+  .el-main {
+    background-color: #e9eef3;
   }
 }
 </style>

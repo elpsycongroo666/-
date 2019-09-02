@@ -7,6 +7,7 @@
         :rules="rules"
         ref="loginForm"
         class="demo-ruleForm"
+        @keypress.enter.native="login"
       >
         <el-form-item prop="username">
           <el-input v-model="userForm.username" placeholder="请输入用户名" prefix-icon="myicon myicon-user"></el-input>

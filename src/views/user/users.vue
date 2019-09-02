@@ -17,7 +17,7 @@
       <el-button slot="append" icon="el-icon-search" @click="init"></el-button>
     </el-input>
     <!-- 添加用户按钮 -->
-    <el-button type="success" plain>添加用户</el-button>
+    <el-button type="success" plain @click="addDialogFormVisible=true">添加用户</el-button>
     <!-- 表格 -->
     <el-table :data="userList" style="width: 100%">
       <el-table-column type="index" width="50"></el-table-column>
@@ -40,6 +40,16 @@
         </el-tooltip>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="userobj.pageunm"
+      :page-sizes="[1, 2, 3, 4]"
+      :page-size="userobj.pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+    ></el-pagination>
   </div>
 </template>
 <script>
@@ -47,6 +57,7 @@ import { getAllUsers } from '@/api/users_index'
 export default {
   data () {
     return {
+      total: 0,
       yes: true,
       userList: [],
       userobj: {
@@ -61,11 +72,24 @@ export default {
     this.init()
   },
   methods: {
+    // 切换当前页码时触发 当前第几页
+    handleCurrentChange (val) {
+      console.log(val)
+      this.userobj.pagenum = val
+      this.init()
+    },
+    // 切换size下拉列表 每页多少条
+    handleSizeChange (val) {
+      console.log(val)
+      this.userobj.pagesize = val
+      this.init()
+    },
     init () {
       getAllUsers(this.userobj)
         .then(res => {
-        //   console.log(res)
+          console.log(res)
           this.userList = res.data.data.users
+          this.total = res.data.data.total
         })
         .catch(err => {
           console.log(err)
