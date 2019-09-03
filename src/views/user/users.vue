@@ -34,7 +34,7 @@
             <el-button type="primary" icon="el-icon-edit" @click="editUserDialog(scope.row)"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="分配角色" placement="top">
-            <el-button type="success" icon="el-icon-check" @click="allotUserRole"></el-button>
+            <el-button type="success" icon="el-icon-check" @click="allotUserRole(scope.row)"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除" placement="top">
             <el-button type="danger" icon="el-icon-delete"></el-button>
@@ -95,23 +95,35 @@
     <el-dialog title="分配角色" :visible.sync="allotDialogFormVisible">
       <el-form :model="allotForm" :label-width="'80px'">
         <el-form-item label="当前用户">
-          <el-input v-model="allotForm.username" auto-complete="off"></el-input>
+          <span>{{allotForm.username}}</span>
         </el-form-item>
         <el-form-item label="选择角色">
-          <el-select v-model="allotForm.role" placeholder="请选择">
-            <el-option :label="item.roleName" :value="item.roleName" v-for="item in roleList" :key="item.id"></el-option>
+          <el-select v-model="allotForm.rid" placeholder="请选择">
+            <!-- label是展示给用户看的 -->
+            <!-- value是给程序员用的，这里的value的值会传递给v-model -->
+            <el-option
+              :label="item.roleName"
+              :value="item.id"
+              v-for="item in roleList"
+              :key="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="allotDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary">确 定</el-button>
+        <el-button type="primary" @click="allotRole">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getAllUsers, addUsers, editUsers } from '@/api/users_index'
+import {
+  getAllUsers,
+  addUsers,
+  editUsers,
+  allotUserRole
+} from '@/api/users_index'
 import { getALLRoleList } from '@/api/role_index.js'
 export default {
   data () {
@@ -122,7 +134,8 @@ export default {
       // 分配用户角色表单数据
       allotForm: {
         username: '',
-        role: ''
+        rid: '',
+        id: ''
       },
       editDialogFormVisible: false,
       // 编辑用户表单数据
@@ -176,11 +189,12 @@ export default {
     //  获取用户列表
     this.init()
     // 获取所有角色
-    getALLRoleList()
-      .then(res => {
-        console.log(res)
+    getALLRoleList().then(res => {
+      console.log(res)
+      if (res.data.meta.status === 200) {
         this.roleList = res.data.data
-      })
+      }
+    })
   },
   methods: {
     // 切换当前页码时触发 当前第几页
@@ -244,8 +258,30 @@ export default {
       }
     },
     // 分配角色弹出对话框
-    allotUserRole () {
+    allotUserRole (row) {
+      // console.log(row)
       this.allotDialogFormVisible = true
+      this.allotForm.username = row.username
+      this.allotForm.id = row.id
+      this.allotForm.rid = row.rid
+    },
+    // 分配角色
+    async allotRole () {
+      // 如果他有值我们才给它发送请求
+      // 因为我们一开始添加用户的时候是没有添加到角色的分配的
+      if (this.allotForm.rid) {
+        let res = await allotUserRole(this.allotForm)
+        console.log(res)
+        if (res.data.meta.status === 200) {
+          this.$message.success(res.data.meta.msg)
+          this.allotDialogFormVisible = false
+          this.init()
+        } else {
+          this.$message.error(res.data.meta.msg)
+        }
+      } else {
+        this.$message.error('请选择角色')
+      }
     }
   }
 }

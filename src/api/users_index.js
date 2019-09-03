@@ -25,3 +25,12 @@ export const editUsers = (data) => {
     data
   })
 }
+
+// 分配用户角色
+export const allotUserRole = (data) => {
+  return axios({
+    url: `users/${data.id}/role`,
+    method: 'put',
+    data
+  })
+}
