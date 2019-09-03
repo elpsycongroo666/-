@@ -29,15 +29,17 @@
         <el-switch v-model="yes" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
       </el-table-column>
       <el-table-column prop="address" label="操作">
-        <el-tooltip class="item" effect="dark" content="编辑" placement="top">
-          <el-button type="primary" icon="el-icon-edit"></el-button>
-        </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="分配角色" placement="top">
-          <el-button type="success" icon="el-icon-check"></el-button>
-        </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="删除" placement="top">
-          <el-button type="danger" icon="el-icon-delete"></el-button>
-        </el-tooltip>
+        <template slot-scope="scope">
+          <el-tooltip class="item" effect="dark" content="编辑" placement="top">
+            <el-button type="primary" icon="el-icon-edit" @click="editUserDialog(scope.row)"></el-button>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="分配角色" placement="top">
+            <el-button type="success" icon="el-icon-check"></el-button>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="删除" placement="top">
+            <el-button type="danger" icon="el-icon-delete"></el-button>
+          </el-tooltip>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
@@ -45,14 +47,14 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="userobj.pageunm"
-      :page-sizes="[1, 2, 3, 4]"
+      :page-sizes="[1, 2, 3, 4, 5, 6]"
       :page-size="userobj.pagesize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
     <!-- 添加用户对话框 -->
     <el-dialog title="添加用户" :visible.sync="addDialogFormVisible">
-      <el-form :model="addform" :label-width="'80px'" :rules="rules" ref="addUserForm">
+      <el-form :model="addform" status-icon :label-width="'80px'" :rules="rules" ref="addUserForm">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="addform.username" autocomplete="off"></el-input>
         </el-form-item>
@@ -71,13 +73,39 @@
         <el-button type="primary" @click="addUsers">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 编辑用户对话框 -->
+    <el-dialog title="编辑用户" :visible.sync="editDialogFormVisible">
+      <el-form :model="editForm" :label-width="'80px'">
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" auto-complete="off" disabled style="width:100px"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="editForm.email" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="editForm.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editUser">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { getAllUsers, addUsers } from '@/api/users_index'
+import { getAllUsers, addUsers, editUsers } from '@/api/users_index'
 export default {
   data () {
     return {
+      editDialogFormVisible: false,
+      // 编辑用户表单数据
+      editForm: {
+        id: '',
+        email: '',
+        mobiel: '',
+        username: ''
+      },
       // 添加用户的表单数据
       addDialogFormVisible: false,
       addform: {
@@ -93,21 +121,27 @@ export default {
       userobj: {
         query: '',
         pagenum: 1,
-        pagesize: 4
+        pagesize: 6
       },
       // 给添加用户表单添加规则
       rules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
-        ],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         email: [
-          { pattern: /\w+((-w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+/, message: '请输入正确邮箱格式', trigger: 'blur' }
+          {
+            pattern: /\w+((-w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+/,
+            message: '请输入正确邮箱格式',
+            trigger: 'blur'
+          }
         ],
         mobile: [
-          { pattern: /0?(13|14|15|18)[0-9]{9}/, message: '请输入正确的手机号码', trigger: 'blur' }
+          {
+            pattern: /0?(13|14|15|18)[0-9]{9}/,
+            message: '请输入正确的手机号码',
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -152,6 +186,29 @@ export default {
         this.$refs.addUserForm.resetFields()
         // 刷新页面
         this.init()
+      } else {
+        this.$message.error(res.data.meta.msg)
+      }
+    },
+    // 编辑用户按钮弹出对话框
+    editUserDialog (row) {
+      // console.log(row)
+      this.editForm.username = row.username
+      this.editForm.email = row.email
+      this.editForm.mobile = row.mobile
+      this.editForm.id = row.id
+      this.editDialogFormVisible = true
+    },
+    // 编辑用户
+    async editUser () {
+      let res = await editUsers(this.editForm)
+      // console.log(res)
+      if (res.data.meta.status === 200) {
+        this.editDialogFormVisible = false
+        this.$message.success(res.data.meta.msg)
+        this.init()
+      } else {
+        this.$message.error(res.data.meta.msg)
       }
     }
   }
