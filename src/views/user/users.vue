@@ -34,7 +34,7 @@
             <el-button type="primary" icon="el-icon-edit" @click="editUserDialog(scope.row)"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="分配角色" placement="top">
-            <el-button type="success" icon="el-icon-check"></el-button>
+            <el-button type="success" icon="el-icon-check" @click="allotUserRole"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除" placement="top">
             <el-button type="danger" icon="el-icon-delete"></el-button>
@@ -91,13 +91,39 @@
         <el-button type="primary" @click="editUser">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 分配角色对话框 -->
+    <el-dialog title="分配角色" :visible.sync="allotDialogFormVisible">
+      <el-form :model="allotForm" :label-width="'80px'">
+        <el-form-item label="当前用户">
+          <el-input v-model="allotForm.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="选择角色">
+          <el-select v-model="allotForm.role" placeholder="请选择">
+            <el-option :label="item.roleName" :value="item.roleName" v-for="item in roleList" :key="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="allotDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { getAllUsers, addUsers, editUsers } from '@/api/users_index'
+import { getALLRoleList } from '@/api/role_index.js'
 export default {
   data () {
     return {
+      // 角色列表
+      roleList: [],
+      allotDialogFormVisible: false,
+      // 分配用户角色表单数据
+      allotForm: {
+        username: '',
+        role: ''
+      },
       editDialogFormVisible: false,
       // 编辑用户表单数据
       editForm: {
@@ -149,6 +175,12 @@ export default {
   mounted () {
     //  获取用户列表
     this.init()
+    // 获取所有角色
+    getALLRoleList()
+      .then(res => {
+        console.log(res)
+        this.roleList = res.data.data
+      })
   },
   methods: {
     // 切换当前页码时触发 当前第几页
@@ -210,6 +242,10 @@ export default {
       } else {
         this.$message.error(res.data.meta.msg)
       }
+    },
+    // 分配角色弹出对话框
+    allotUserRole () {
+      this.allotDialogFormVisible = true
     }
   }
 }
