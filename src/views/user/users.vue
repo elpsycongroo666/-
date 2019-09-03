@@ -52,7 +52,7 @@
     ></el-pagination>
     <!-- 添加用户对话框 -->
     <el-dialog title="添加用户" :visible.sync="addDialogFormVisible">
-      <el-form :model="addform" :label-width="'80px'" :rules="rules">
+      <el-form :model="addform" :label-width="'80px'" :rules="rules" ref="addUserForm">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="addform.username" autocomplete="off"></el-input>
         </el-form-item>
@@ -68,13 +68,13 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary">确 定</el-button>
+        <el-button type="primary" @click="addUsers">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getAllUsers } from '@/api/users_index'
+import { getAllUsers, addUsers } from '@/api/users_index'
 export default {
   data () {
     return {
@@ -129,6 +129,7 @@ export default {
       this.userobj.pagesize = val
       this.init()
     },
+    // 页面数据初始化
     init () {
       getAllUsers(this.userobj)
         .then(res => {
@@ -139,6 +140,19 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    // 添加用户
+    async addUsers () {
+      let res = await addUsers(this.addform)
+      console.log(res)
+      if (res.data.meta.status === 201) {
+        this.$message.success(res.data.meta.msg)
+        this.addDialogFormVisible = false
+        // 重置表单数据
+        this.$refs.addUserForm.resetFields()
+        // 刷新页面
+        this.init()
+      }
     }
   }
 }

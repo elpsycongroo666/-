@@ -7,3 +7,12 @@ export const getAllUsers = (params) => {
     params
   })
 }
+
+// 添加用户
+export const addUsers = (data) => {
+  return axios({
+    url: 'users',
+    method: 'post',
+    data
+  })
+}
