@@ -37,7 +37,7 @@
             <el-button type="success" icon="el-icon-check" @click="allotUserRole(scope.row)"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除" placement="top">
-            <el-button type="danger" icon="el-icon-delete"></el-button>
+            <el-button type="danger" icon="el-icon-delete" @click="delUser(scope.row.id)"></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -122,7 +122,8 @@ import {
   getAllUsers,
   addUsers,
   editUsers,
-  allotUserRole
+  allotUserRole,
+  delUserById
 } from '@/api/users_index'
 import { getALLRoleList } from '@/api/role_index.js'
 export default {
@@ -282,6 +283,32 @@ export default {
       } else {
         this.$message.error('请选择角色')
       }
+    },
+    // 删除用户
+    delUser (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log(id)
+        delUserById(id)
+          .then(res => {
+            if (res.data.meta.status === 200) {
+              this.$message.success('删除成功')
+              this.userobj.pagenum = Math.ceil((this.total - 1) / this.userobj.pagesize) < this.userobj.pagesize
+                ? --this.userobj.pagenum : this.userobj.pagenum
+              this.init()
+            } else {
+              this.$message.error(res.data.meta.msg)
+            }
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
